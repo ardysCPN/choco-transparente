@@ -181,7 +181,11 @@ export const TerritorialPage = () => {
       {/* Contenido según la pestaña activa */}
       <div className="animate-in fade-in duration-200">
         {activeTab === 'mapa' && (
-          <AfectacionesMap afectaciones={afectaciones} />
+          <AfectacionesMap
+            afectaciones={afectaciones}
+            municipios={municipios}
+            centros={centros}
+          />
         )}
 
         {activeTab === 'afectaciones' && (
