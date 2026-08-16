@@ -1,149 +1,175 @@
-# 🚀 MANUAL DE DESPLIEGUE EN VPS CON DOKPLOY
+# 🚀 GUÍA DE DESPLIEGUE DOKPLOY (COMPOSE STACK)
 ## Plataforma Departamental Chocó Transparente v1.0
 
-Este manual detalla paso a paso cómo realizar el despliegue del **Backend (API Node.js + Prisma)**, **Frontend (React + Nginx)** y la **Base de Datos PostgreSQL (con PostGIS)** utilizando **Dokploy** en tu servidor VPS.
+Esta guía utiliza la misma dinámica y estructura de **Docker Compose** que ya utilizas en tus otros proyectos en Dokploy (`rufe`, `clientealcaldia-stack`).
+
+Al desplegar como Compose en Dokploy:
+- Se levanta la base de datos PostgreSQL con PostGIS (`postgis/postgis:15-3.4`).
+- **El script de base de datos se carga automáticamente** la primera vez al montar el volumen (`/docker-entrypoint-initdb.d/01-init.sql`).
+- El Backend compila el código de `/backend` y se conecta internamente a `postgres:5432`.
+- El Frontend compila el código de `/frontend` con Nginx y se conecta a la API.
 
 ---
 
-## 📋 1. Requisitos Previos en el VPS
+## 📋 1. Configuración de Dokploy Compose
 
-1. **VPS con Dokploy instalado** y accesible vía web (ej. `http://tu-ip:3000` o `https://dokploy.tudominio.com`).
-2. **Repositorios en GitHub:**
-   - Opción Monorepositorio: 1 repositorio que contiene `/backend` y `/frontend`.
-   - Opción Multirepositorio: 1 repositorio para el backend y 1 para el frontend.
-3. **Dominios o Subdominios DNS (A Records apuntando a la IP de tu VPS):**
-   - Frontend: `chocotransparente.gov.co` o `app.tudominio.com`
-   - Backend API: `api.chocotransparente.gov.co` o `api.tudominio.com`
+### Paso 1: Crear el Servicio en Dokploy
+1. Abre tu panel de Dokploy en `http://187.77.25.231:3000`.
+2. En tu Proyecto, haz clic en **Create Service** > **Compose**.
+3. Asigna un nombre al servicio: **`choco-transparente`**.
 
 ---
 
-## 🗄️ 2. Configuración de la Base de Datos PostgreSQL en Dokploy
+### Paso 2: Configurar el Repositorio GitHub
+- **Source:** Selecciona **GitHub**.
+- **Repository:** `ardysCPN/choco-transparente` (o la URL de tu repositorio).
+- **Branch:** `main`.
+- **Compose Path:** `docker-compose.yml` (o `./docker-compose.yml`).
 
-Si ya tienes un servicio de PostgreSQL creado en Dokploy o en el VPS:
+---
 
-### 2.1. Habilitar la Extensión PostGIS
-Conéctate a tu base de datos PostgreSQL y asegúrate de habilitar PostGIS:
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
+### Paso 3: Pegar el archivo `docker-compose.yml` (si usas modo Raw Compose)
+
+```yaml
+version: "3.9"
+
+services:
+  # 1. Base de Datos con PostGIS (Poblamiento automático)
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: choco-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./script-BD-demo.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - choco_network
+
+  # 2. Backend API REST (Node.js + Prisma)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: choco-backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_TIEMPO_EXPIRACION: ${JWT_TIEMPO_EXPIRACION:-8h}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    networks:
+      - choco_network
+
+  # 3. Frontend Web (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: choco-frontend
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - choco_network
+
+volumes:
+  postgres_data:
+
+networks:
+  choco_network:
+    driver: bridge
 ```
 
-### 2.2. Cargar el Script de Base de Datos
+---
 
-En Dokploy, puedes acceder a la consola/terminal del contenedor PostgreSQL o usar una herramienta como DBeaver / pgAdmin / psql:
+### Paso 4: Configurar las Variables de Entorno en Dokploy
 
-#### Opción A: Despliegue de Demostración / Testing Inicial (Recomendado para pruebas)
-Ejecuta el archivo [`script-BD-demo.sql`](./script-BD-demo.sql):
-- Crea el esquema DDL completo e índices espaciales GIST.
-- Carga los **31 municipios oficiales del Chocó**.
-- Carga los roles y permisos institucionales.
-- Crea el usuario **Superadmin** (`admin@chocotransparente.gov.co` / `AdminChoco2026!`).
-- Crea el usuario de **Testing** (`test@chocotransparente.gov.co` / `TestChoco2026!`).
-- Carga centros de acopio, albergues, emergencias e inventario de muestra.
+En la pestaña **Environment** del servicio Compose en Dokploy, pega las siguientes variables:
 
-#### Opción B: Despliegue Oficial en Limpio para la Gobernación
-Ejecuta el archivo [`script-BD-produccion.sql`](./script-BD-produccion.sql):
-- Crea la estructura DDL limpia sin ningún registro de prueba.
-- Carga únicamente los 31 municipios, roles, entidad oficial y el Superadministrador.
+```ini
+# Base de Datos
+POSTGRES_DB=choco_transparente
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=TuPasswordSeguroPostgres2026!
+
+# Backend
+JWT_SECRET=clave_secreta_jwt_choco_transparente_2026_muy_segura
+JWT_REFRESH_SECRET=clave_secreta_refresh_choco_transparente_2026
+JWT_TIEMPO_EXPIRACION=8h
+JWT_REFRESH_EXPIRES_IN=7d
+CORS_ORIGIN=*
+
+# Frontend (URL pública HTTPS de tu Backend API)
+VITE_API_URL=https://api.tudominio.com/api/v1
+```
 
 ---
 
-## ⚙️ 3. Despliegue del Backend en Dokploy
+### Paso 5: Configurar los Dominios en Dokploy (Traefik SSL)
 
-1. En el panel de Dokploy, ve a tu Proyecto y haz clic en **Create Service** > **Application**.
-2. Asigna un nombre al servicio: `choco-backend`.
-3. Configura el origen del código (**Source**):
-   - Selecciona **GitHub**.
-   - Escoge el repositorio correspondiente y la rama `main`.
-   - Si es monorepositorio, define **Base Directory**: `/backend`.
-4. Configura el tipo de construcción (**Build Type**):
-   - Selecciona **Dockerfile**.
-   - **Dockerfile Path**: `/backend/Dockerfile` (o `./Dockerfile` si es repo independiente).
-5. Configura las **Variables de Entorno (Environment Variables)**:
-   ```ini
-   NODE_ENV=production
-   PORT=4000
-   DATABASE_URL=postgresql://usuario_pg:password_pg@postgres_host:5432/choco_transparente?schema=public
-   JWT_SECRET=genera_una_clave_aleatoria_muy_segura_de_64_caracteres
-   JWT_REFRESH_SECRET=genera_otra_clave_aleatoria_refresh_segura
-   JWT_TIEMPO_EXPIRACION=8h
-   JWT_REFRESH_EXPIRES_IN=7d
-   CORS_ORIGIN=*
+En la sección **Domains / Networking** de Dokploy:
+
+1. **Dominio para el Frontend (Web Pública y Admin):**
+   - **Service:** `frontend`
+   - **Port:** `80`
+   - **Host:** `chocotransparente.tudominio.com` (o tu dominio principal)
+   - **Certificate:** Activar **Let's Encrypt (SSL Automático)**
+
+2. **Dominio para el Backend (API REST):**
+   - **Service:** `backend`
+   - **Port:** `4000`
+   - **Host:** `api.tudominio.com` (o `api.chocotransparente.tudominio.com`)
+   - **Certificate:** Activar **Let's Encrypt (SSL Automático)**
+
+---
+
+### Paso 6: Desplegar (**Deploy**)
+
+Haz clic en el botón **Deploy**.
+
+Dokploy realizará automáticamente:
+1. La descarga de la imagen `postgis/postgis:15-3.4` (que ya tienes en caché).
+2. La compilación multi-stage de `backend` (TypeScript y Prisma).
+3. La compilación multi-stage de `frontend` (Vite y Nginx).
+4. La inicialización automática de la base de datos con [`script-BD-demo.sql`](./script-BD-demo.sql).
+5. La emisión de certificados SSL gratuitos con Traefik.
+
+---
+
+## 👥 2. Credenciales Listas para Iniciar Testing
+
+Una vez finalice el despliegue:
+
+| Acceso | URL | Credenciales |
+| :--- | :--- | :--- |
+| **Portal Público** | `https://tudominio.com/` | Libre acceso ciudadano |
+| **Mapa en Vivo** | `https://tudominio.com/mapa` | Monitoreo de los 31 municipios |
+| **Panel Admin (Testing)** | `https://tudominio.com/admin/login` | Botón **🧪 Cargar Usuario de Pruebas** (`test@chocotransparente.gov.co` / `TestChoco2026!`) |
+| **Superadministrador** | `https://tudominio.com/admin/login` | `admin@chocotransparente.gov.co` / `AdminChoco2026!` |
+
+---
+
+## 🏛️ 3. Cambio a Producción Oficial para la Gobernación
+
+Cuando vayas a entregar la plataforma limpia desde cero a la Gobernación:
+1. En `docker-compose.yml`, cambia la línea:
+   ```yaml
+   - ./script-BD-demo.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
    ```
-6. Configura la Red y Puertos (**Networking**):
-   - **Container Port**: `4000`
-   - **Domain**: `api.chocotransparente.gov.co` (o tu subdominio asignado).
-   - **Certificate**: Habilita **Let's Encrypt (SSL/HTTPS)** automático.
-7. Haz clic en **Deploy**.
-8. **Verificación:** Accede a `https://api.tudominio.com/health` y confirma que retorne:
-   ```json
-   { "ok": true, "mensaje": "Servidor operativo" }
+   por:
+   ```yaml
+   - ./script-BD-produccion.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
    ```
-
----
-
-## 🎨 4. Despliegue del Frontend en Dokploy
-
-1. En el panel de Dokploy, dentro del mismo Proyecto, haz clic en **Create Service** > **Application**.
-2. Asigna un nombre al servicio: `choco-frontend`.
-3. Configura el origen del código (**Source**):
-   - Selecciona **GitHub**.
-   - Escoge el repositorio y la rama `main`.
-   - Si es monorepositorio, define **Base Directory**: `/frontend`.
-4. Configura el tipo de construcción (**Build Type**):
-   - Selecciona **Dockerfile**.
-   - **Dockerfile Path**: `/frontend/Dockerfile` (o `./Dockerfile` si es repo independiente).
-5. Configura los **Build Arguments (Build Args)**:
-   - `VITE_API_URL=https://api.chocotransparente.gov.co/api/v1` *(Usa la URL pública HTTPS de tu Backend)*
-6. Configura la Red y Puertos (**Networking**):
-   - **Container Port**: `80`
-   - **Domain**: `chocotransparente.gov.co` (o tu dominio asignado).
-   - **Certificate**: Habilita **Let's Encrypt (SSL/HTTPS)** automático.
-7. Haz clic en **Deploy**.
-
----
-
-## 🐳 5. Opción Alternativa: Despliegue Todo-en-Uno vía Docker Compose
-
-Si prefieres desplegar todo el stack junto (Base de Datos PostGIS + Backend + Frontend) desde Dokploy usando Docker Compose:
-
-1. En Dokploy, haz clic en **Create Service** > **Compose**.
-2. Asigna el nombre: `choco-transparente-stack`.
-3. Selecciona tu repositorio de GitHub.
-4. Vincula el archivo [`docker-compose.yml`](./docker-compose.yml).
-5. Define las variables de entorno en el editor de Dokploy (copiando de [`.env.example`](./.env.example)):
-   ```ini
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=tu_password_seguro_produccion_2026
-   POSTGRES_DB=choco_transparente
-   POSTGRES_PORT=5432
-   JWT_SECRET=super_secret_jwt_key_choco_2026_prod
-   JWT_REFRESH_SECRET=super_secret_refresh_key_choco_2026_prod
-   CORS_ORIGIN=*
-   VITE_API_URL=https://api.tudominio.com/api/v1
-   ```
-6. Haz clic en **Deploy**. Dokploy orquestará los 3 contenedores y configurará los reverse proxies automáticamente.
-
----
-
-## 👥 6. Credenciales de Acceso para Testing y Demo
-
-Una vez desplegada la plataforma:
-
-| Rol | Correo Electrónico | Contraseña | Ámbito |
-| :--- | :--- | :--- | :--- |
-| **Superadministrador** | `admin@chocotransparente.gov.co` | `AdminChoco2026!` | Acceso Global Total (31 Municipios) |
-| **Operador / Testing** | `test@chocotransparente.gov.co` | `TestChoco2026!` | Coordinación Operativa de Acopio |
-
-### URLs de Acceso
-- **Portal Público Ciudadano:** `https://tudominio.com/`
-- **Mapa Georreferenciado en Vivo:** `https://tudominio.com/mapa`
-- **Panel Administrativo:** `https://tudominio.com/admin/login`
-
----
-
-## 🔒 7. Recomendaciones de Seguridad para Producción Oficial
-
-1. **Cambio de Contraseñas:** Tan pronto como inicie sesión el administrador oficial, cambiar las contraseñas predeterminadas desde el módulo de usuarios.
-2. **Generación de JWT Secrets:** Generar cadenas criptográficas únicas para `JWT_SECRET` y `JWT_REFRESH_SECRET` usando `openssl rand -base64 48`.
-3. **Copias de Seguridad (Backups):** Configurar en Dokploy backups automáticos diarios de la base de datos PostgreSQL hacia un almacenamiento S3 / MinIO.
-4. **CORS:** En producción institucional, restringir `CORS_ORIGIN` al dominio exacto del Frontend: `https://chocotransparente.gov.co`.
+2. Elimina el volumen anterior si deseas borrar los datos de prueba (`docker volume rm ...`) y haz clic en **Deploy**.
