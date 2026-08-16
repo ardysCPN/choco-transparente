@@ -5,6 +5,7 @@ import { CentroAcopio } from '../../types/territorial.types';
 import { RegistrarEntradaInput } from '../../types/inventario.types';
 import { useAuthStore } from '../../store/authStore';
 import { inventarioService } from '../../services/inventario.service';
+import { handleApiError } from '../../utils/errorHandler';
 import { QRScannerModal } from './QRScannerModal';
 import toast from 'react-hot-toast';
 
@@ -76,7 +77,7 @@ export const EntradaModal: React.FC<EntradaModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al registrar entrada de inventario');
+      handleApiError(error, 'Error al registrar entrada de inventario');
     }
   };
 

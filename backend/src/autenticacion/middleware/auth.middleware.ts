@@ -84,7 +84,11 @@ export function requerirPermiso(permisoCodigo: string) {
         return next();
       }
 
-      return next(new ErrorNoAutorizado('No tiene permisos para realizar esta operación'));
+      return next(
+        new ErrorNoAutorizado(
+          `Acceso denegado (403): Tu rol [${usuario.rol.nombre}] no tiene el permiso [${permisoCodigo}] para esta acción. Inicia sesión como Administrador de la Gobernación si requieres este privilegio.`
+        )
+      );
     } catch (error) {
       next(error);
     }

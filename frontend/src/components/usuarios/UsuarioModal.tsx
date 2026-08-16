@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, User, Mail, Lock } from 'lucide-react';
 import { Usuario, Rol, CrearUsuarioInput, ActualizarUsuarioInput } from '../../types/usuarios.types';
 import { Municipio } from '../../types/territorial.types';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface UsuarioModalProps {
@@ -68,7 +69,7 @@ export const UsuarioModal: React.FC<UsuarioModalProps> = ({
       await onSave(payload);
       onClose();
     } catch (error: any) {
-      toast.error(error?.response?.data?.mensaje || 'Error al guardar usuario');
+      handleApiError(error, 'Error al guardar usuario');
     } finally {
       setIsSubmitting(false);
     }

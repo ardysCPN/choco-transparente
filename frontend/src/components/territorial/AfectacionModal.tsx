@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { X, AlertTriangle, Loader2, Save } from 'lucide-react';
 import { Afectacion, CrearAfectacionInput, Municipio } from '../../types/territorial.types';
+import { handleApiError } from '../../utils/errorHandler';
 import { useAuthStore } from '../../store/authStore';
 import { territorialService } from '../../services/territorial.service';
 import toast from 'react-hot-toast';
@@ -79,7 +80,7 @@ export const AfectacionModal: React.FC<AfectacionModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al guardar afectación');
+      handleApiError(error, 'Error al guardar afectación');
     }
   };
 

@@ -5,6 +5,7 @@ import { CentroAcopio, Municipio } from '../../types/territorial.types';
 import { RegistrarSalidaInput, ItemInventario } from '../../types/inventario.types';
 import { useAuthStore } from '../../store/authStore';
 import { inventarioService } from '../../services/inventario.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface SalidaModalProps {
@@ -89,7 +90,7 @@ export const SalidaModal: React.FC<SalidaModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al registrar salida de inventario');
+      handleApiError(error, 'Error al registrar salida de inventario');
     }
   };
 

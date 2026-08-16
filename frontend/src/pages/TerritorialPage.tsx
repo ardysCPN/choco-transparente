@@ -10,11 +10,11 @@ import {
 } from 'lucide-react';
 import { territorialService } from '../services/territorial.service';
 import { Municipio, Afectacion, CentroAcopio } from '../types/territorial.types';
+import { handleApiError } from '../utils/errorHandler';
 import { MunicipiosList } from '../components/territorial/MunicipiosList';
 import { AfectacionesMap } from '../components/territorial/AfectacionesMap';
 import { AfectacionesList } from '../components/territorial/AfectacionesList';
 import { CentrosAcopioList } from '../components/territorial/CentrosAcopioList';
-import toast from 'react-hot-toast';
 
 export const TerritorialPage = () => {
   const [activeTab, setActiveTab] = useState<'mapa' | 'afectaciones' | 'municipios' | 'centros'>('mapa');
@@ -42,8 +42,8 @@ export const TerritorialPage = () => {
       if (resCentros.status === 'fulfilled' && resCentros.value.exito && resCentros.value.datos) {
         setCentros(resCentros.value.datos);
       }
-    } catch {
-      toast.error('Error al sincronizar datos territoriales');
+    } catch (error) {
+      handleApiError(error, 'Error al sincronizar datos territoriales');
     } finally {
       setIsLoading(false);
     }

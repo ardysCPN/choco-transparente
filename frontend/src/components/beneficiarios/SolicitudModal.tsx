@@ -4,6 +4,7 @@ import { X, FileText, Loader2, Send } from 'lucide-react';
 import { Beneficiario, CrearSolicitudInput, SolicitudAyuda } from '../../types/beneficiario.types';
 import { Afectacion } from '../../types/territorial.types';
 import { beneficiarioService } from '../../services/beneficiario.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface SolicitudModalProps {
@@ -91,7 +92,7 @@ export const SolicitudModal: React.FC<SolicitudModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al procesar la solicitud');
+      handleApiError(error, 'Error al procesar la solicitud');
     }
   };
 

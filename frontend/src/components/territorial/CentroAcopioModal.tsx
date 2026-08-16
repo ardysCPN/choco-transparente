@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { X, Building2, Loader2, Save } from 'lucide-react';
 import { CentroAcopio, CrearCentroAcopioInput, Municipio } from '../../types/territorial.types';
 import { territorialService } from '../../services/territorial.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface CentroAcopioModalProps {
@@ -77,7 +78,7 @@ export const CentroAcopioModal: React.FC<CentroAcopioModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al procesar centro de acopio');
+      handleApiError(error, 'Error al procesar centro de acopio');
     }
   };
 

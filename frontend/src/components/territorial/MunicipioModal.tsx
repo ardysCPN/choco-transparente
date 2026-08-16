@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Building, Loader2, Save } from 'lucide-react';
 import { Municipio, CrearMunicipioInput } from '../../types/territorial.types';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 import { territorialService } from '../../services/territorial.service';
 
@@ -65,7 +66,7 @@ export const MunicipioModal: React.FC<MunicipioModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al guardar municipio');
+      handleApiError(error, 'Error al guardar municipio');
     }
   };
 

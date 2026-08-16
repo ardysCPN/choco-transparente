@@ -4,6 +4,7 @@ import { X, Truck, Loader2, Send, Camera } from 'lucide-react';
 import { Beneficiario, CrearEntregaInput } from '../../types/beneficiario.types';
 import { useAuthStore } from '../../store/authStore';
 import { beneficiarioService } from '../../services/beneficiario.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface EntregaModalProps {
@@ -57,7 +58,7 @@ export const EntregaModal: React.FC<EntregaModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al registrar la entrega');
+      handleApiError(error, 'Error al registrar la entrega');
     }
   };
 

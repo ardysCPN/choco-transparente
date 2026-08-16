@@ -21,6 +21,7 @@ import { usuariosService } from '../services/usuarios.service';
 import { publicoService } from '../services/publico.service';
 import { UsuarioModal } from '../components/usuarios/UsuarioModal';
 import { ROL_LABELS } from '../utils/constants';
+import { handleApiError } from '../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 export const UsuariosPage: React.FC = () => {
@@ -59,7 +60,7 @@ export const UsuariosPage: React.FC = () => {
         setMunicipios(resMunis.value as any);
       }
     } catch (error) {
-      toast.error('Error al sincronizar datos de usuarios');
+      handleApiError(error, 'Error al sincronizar datos de usuarios');
     } finally {
       setIsLoading(false);
     }
@@ -70,14 +71,18 @@ export const UsuariosPage: React.FC = () => {
   }, []);
 
   const handleSaveUsuario = async (data: CrearUsuarioInput | ActualizarUsuarioInput) => {
-    if (usuarioToEdit) {
-      await usuariosService.actualizarUsuario(usuarioToEdit.id, data);
-      toast.success('Usuario actualizado exitosamente');
-    } else {
-      await usuariosService.crearUsuario(data as CrearUsuarioInput);
-      toast.success('Usuario creado exitosamente');
+    try {
+      if (usuarioToEdit) {
+        await usuariosService.actualizarUsuario(usuarioToEdit.id, data);
+        toast.success('Usuario actualizado exitosamente');
+      } else {
+        await usuariosService.crearUsuario(data as CrearUsuarioInput);
+        toast.success('Usuario creado exitosamente');
+      }
+      fetchData();
+    } catch (error) {
+      handleApiError(error, 'No fue posible guardar el usuario');
     }
-    fetchData();
   };
 
   const handleToggleEstado = async (usuario: Usuario) => {
@@ -91,7 +96,7 @@ export const UsuariosPage: React.FC = () => {
       );
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.mensaje || 'Error al cambiar estado del usuario');
+      handleApiError(error, 'Error al cambiar estado del usuario');
     }
   };
 

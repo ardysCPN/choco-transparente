@@ -4,6 +4,7 @@ import { X, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
 import { CentroAcopio, AuditarCentroAcopioInput } from '../../types/territorial.types';
 import { useAuthStore } from '../../store/authStore';
 import { territorialService } from '../../services/territorial.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface AuditarCentroModalProps {
@@ -50,7 +51,7 @@ export const AuditarCentroModal: React.FC<AuditarCentroModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al auditar centro de acopio');
+      handleApiError(error, 'Error al auditar centro de acopio');
     }
   };
 

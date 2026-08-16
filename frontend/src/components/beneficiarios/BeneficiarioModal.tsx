@@ -4,6 +4,7 @@ import { X, UserPlus, Edit, Loader2, Save, MapPin } from 'lucide-react';
 import { Beneficiario, CrearBeneficiarioInput } from '../../types/beneficiario.types';
 import { Municipio } from '../../types/territorial.types';
 import { beneficiarioService } from '../../services/beneficiario.service';
+import { handleApiError } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 
 interface BeneficiarioModalProps {
@@ -91,7 +92,7 @@ export const BeneficiarioModal: React.FC<BeneficiarioModalProps> = ({
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.mensaje || 'Error al guardar beneficiario');
+      handleApiError(error, 'Error al guardar beneficiario');
     }
   };
 

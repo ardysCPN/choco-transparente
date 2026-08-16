@@ -12,12 +12,12 @@ import { inventarioService } from '../services/inventario.service';
 import { territorialService } from '../services/territorial.service';
 import { ItemInventario, EstadisticasInventarioData } from '../types/inventario.types';
 import { CentroAcopio, Municipio } from '../types/territorial.types';
+import { handleApiError } from '../utils/errorHandler';
 import { InventarioDashboard } from '../components/inventario/InventarioDashboard';
 import { InventarioTable } from '../components/inventario/InventarioTable';
 import { EntradaModal } from '../components/inventario/EntradaModal';
 import { SalidaModal } from '../components/inventario/SalidaModal';
 import { ReporteInventarioModal } from '../components/inventario/ReporteInventarioModal';
-import toast from 'react-hot-toast';
 
 export const InventarioPage = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tabla'>('dashboard');
@@ -75,8 +75,8 @@ export const InventarioPage = () => {
       });
 
       setItems(itemsConsolidados);
-    } catch {
-      toast.error('Error al sincronizar inventarios');
+    } catch (error) {
+      handleApiError(error, 'Error al sincronizar inventarios');
     } finally {
       setIsLoading(false);
     }
