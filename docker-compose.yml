@@ -24,7 +24,7 @@ services:
       - choco_network
 
   # ============================================================================
-  # 2. BACKEND API REST (Node.js + Express + Prisma)
+  # 2. BACKEND API REST (Node.js + Express + Prisma) 
   # ============================================================================
   backend:
     build:
