@@ -297,11 +297,20 @@ export const LoginPage = () => {
               <button
                 type="button"
                 onClick={() =>
+                  setDemoCredentials('admin@chocotransparente.gov.co', 'AdminChoco2026!')
+                }
+                className="px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-600/60 hover:border-emerald-400 text-xs font-semibold text-emerald-300 hover:text-emerald-200 transition-colors flex items-center gap-1.5"
+              >
+                <span>👑 Superadministrador (Gobernación)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
                   setDemoCredentials('test@chocotransparente.gov.co', 'TestChoco2026!')
                 }
-                className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-emerald-500 text-xs font-semibold text-emerald-300 hover:text-emerald-200 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-500 text-xs font-semibold text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
               >
-                <span>🧪 Cargar Usuario de Pruebas (Test)</span>
+                <span>🧪 Operador / Coordinador</span>
               </button>
             </div>
 

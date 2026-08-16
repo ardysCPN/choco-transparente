@@ -10,6 +10,7 @@ import BeneficiariosPage from './pages/BeneficiariosPage';
 import AlberguesDenunciasPage from './pages/AlberguesDenunciasPage';
 import FinancieroPage from './pages/FinancieroPage';
 import ReportesPage from './pages/ReportesPage';
+import UsuariosPage from './pages/UsuariosPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Componentes del Portal Público
@@ -78,6 +79,8 @@ export function App() {
             <Route path="/albergues-denuncias" element={<AlberguesDenunciasPage />} />
             <Route path="/financiero" element={<FinancieroPage />} />
             <Route path="/reportes" element={<ReportesPage />} />
+            <Route path="/usuarios" element={<UsuariosPage />} />
+            <Route path="/admin/usuarios" element={<UsuariosPage />} />
           </Route>
         </Route>
 

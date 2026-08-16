@@ -11,6 +11,7 @@ import {
   Shield,
   X,
   Sparkles,
+  UserCheck,
 } from 'lucide-react';
 import { MODULOS_SISTEMA, APP_CONFIG } from '../../utils/constants';
 
@@ -27,6 +28,7 @@ const iconMap: Record<string, React.ReactNode> = {
   Home: <Home className="w-5 h-5" />,
   DollarSign: <DollarSign className="w-5 h-5" />,
   BarChart3: <BarChart3 className="w-5 h-5" />,
+  UserCheck: <UserCheck className="w-5 h-5" />,
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {

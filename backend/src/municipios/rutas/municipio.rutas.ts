@@ -9,7 +9,7 @@ const servicio = new MunicipioServicio();
 
 router.use(autenticarToken);
 
-router.get('/', requerirPermiso('SISTEMA_GLOBAL'), async (_req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const datos = await servicio.listarMunicipios();
     return responderExito(res, 'Municipios consultados correctamente', datos);
@@ -18,7 +18,7 @@ router.get('/', requerirPermiso('SISTEMA_GLOBAL'), async (_req, res) => {
   }
 });
 
-router.get('/:id', requerirPermiso('SISTEMA_GLOBAL'), async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const datos = await servicio.obtenerMunicipio(Number(req.params.id));
     return responderExito(res, 'Municipio consultado correctamente', datos);

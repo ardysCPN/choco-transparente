@@ -98,4 +98,13 @@ export const MODULOS_SISTEMA: ModuloNav[] = [
     estado: 'ACTIVO',
     rolesPermitidos: [ROLES.SUPERADMIN, ROLES.ADMIN_MUNICIPAL, ROLES.COORDINADOR, ROLES.AUDITOR, ROLES.VEEDOR, ROLES.ORGANIZACION],
   },
+  {
+    fase: 8,
+    nombre: 'Usuarios y Roles',
+    ruta: '/usuarios',
+    icono: 'UserCheck',
+    descripcion: 'Gestión de accesos, roles y personal operativo',
+    estado: 'ACTIVO',
+    rolesPermitidos: [ROLES.SUPERADMIN],
+  },
 ];

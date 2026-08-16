@@ -9,7 +9,7 @@ const servicio = new RolServicio();
 
 router.use(autenticarToken);
 
-router.get('/', requerirPermiso('SISTEMA_GLOBAL'), async (_req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const datos = await servicio.listarRoles();
     return responderExito(res, 'Roles consultados correctamente', datos);

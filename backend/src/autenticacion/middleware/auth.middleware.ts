@@ -24,7 +24,7 @@ export function autenticarToken(req: Request, _res: Response, next: NextFunction
   const cabecera = req.headers.authorization;
 
   if (!cabecera || !cabecera.startsWith('Bearer ')) {
-    throw new ErrorAutenticacion('Token no enviado o formato inválido');
+    return next(new ErrorAutenticacion('Token no enviado o formato inválido'));
   }
 
   const token = cabecera.replace('Bearer ', '');
@@ -48,42 +48,45 @@ export function autenticarToken(req: Request, _res: Response, next: NextFunction
 
     next();
   } catch {
-    throw new ErrorAutenticacion('Token inválido o expirado');
+    return next(new ErrorAutenticacion('Token inválido o expirado'));
   }
 }
 
 export function requerirPermiso(permisoCodigo: string) {
   return async function (req: Request, _res: Response, next: NextFunction) {
-    if (!req.usuario) {
-      throw new ErrorAutenticacion('Debe autenticarse para acceder');
-    }
+    try {
+      if (!req.usuario) {
+        return next(new ErrorAutenticacion('Debe autenticarse para acceder'));
+      }
 
-    const usuario = await prisma.usuario.findUnique({
-      where: { id: req.usuario.id },
-      include: {
-        rol: {
-          include: {
-            permisos: {
-              include: {
-                permiso: true
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: req.usuario.id },
+        include: {
+          rol: {
+            include: {
+              permisos: {
+                include: {
+                  permiso: true
+                }
               }
             }
           }
         }
+      });
+
+      if (!usuario) {
+        return next(new ErrorNoAutorizado('Usuario no encontrado'));
       }
-    });
 
-    if (!usuario) {
-      throw new ErrorNoAutorizado('Usuario no encontrado');
+      const permisos = usuario.rol.permisos.map((rolPermiso: any) => rolPermiso.permiso.codigo);
+
+      if (usuario.rol.nombre === 'SUPERADMIN' || permisos.includes(permisoCodigo)) {
+        return next();
+      }
+
+      return next(new ErrorNoAutorizado('No tiene permisos para realizar esta operación'));
+    } catch (error) {
+      next(error);
     }
-
-    const permisos = usuario.rol.permisos.map((rolPermiso: any) => rolPermiso.permiso.codigo);
-
-    if (usuario.rol.nombre === 'SUPERADMIN' || permisos.includes(permisoCodigo)) {
-      next();
-      return;
-    }
-
-    throw new ErrorNoAutorizado('No tiene permisos para realizar esta operación');
   };
 }
