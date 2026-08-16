@@ -35,8 +35,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Exponer puerto HTTP estándar
 EXPOSE 80
 
-# Healthcheck de contenedor
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
+# Healthcheck de contenedor (utiliza netcat para verificar que el puerto 80 esté respondiendo)
+HEALTHCHECK --interval=15s --timeout=5s --start-period=3s --retries=3 \
+  CMD nc -z 127.0.0.1 80 || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
