@@ -1,0 +1,18 @@
+{
+  "id": "choco-transparente-env",
+  "name": "CHOCÓ TRANSPARENTE - Development",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "enabled": true
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "enabled": true
+    }
+  ]
+}

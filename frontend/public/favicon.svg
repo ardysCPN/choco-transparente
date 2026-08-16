@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Shield Shadow/Border -->
+  <path d="M32 4L10 14V30C10 44.5 19.5 57 32 60C44.5 57 54 44.5 54 30V14L32 4Z" fill="#0f172a" />
+  
+  <!-- Inner Shield Fill -->
+  <path d="M32 7L13 16V29.5C13 42.2 21.2 53.2 32 56.5C42.8 53.2 51 42.2 51 29.5V16L32 7Z" fill="url(#shieldGrad)" />
+  
+  <!-- Chocó River wave / Gold Emblem in center -->
+  <path d="M32 17L38 29H26L32 17Z" fill="url(#goldAccent)" opacity="0.95" />
+  <path d="M22 33C26 31 28 35 32 33C36 31 38 35 42 33C43 35 42 38 40 40C36 43 34 41 32 43C30 41 28 43 24 40C22 38 21 35 22 33Z" fill="#ffffff" opacity="0.9" />
+  
+  <!-- Center Star/Dot of Transparency -->
+  <circle cx="32" cy="48" r="2.5" fill="#facc15" />
+</svg>

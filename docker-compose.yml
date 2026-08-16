@@ -1,0 +1,77 @@
+services:
+  # ============================================================================
+  # 1. BASE DE DATOS POSTGRESQL + EXTENSIÓN GEOGRÁFICA POSTGIS
+  # ============================================================================
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: choco-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_password_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-choco_transparente}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./script-BD-demo.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-choco_transparente}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - choco-network
+
+  # ============================================================================
+  # 2. BACKEND API REST (Node.js + Express + Prisma)
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: choco-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password_2026}@postgres:5432/${POSTGRES_DB:-choco_transparente}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-clave_secreta_jwt_para_desarrollo_2026_muy_segura}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-clave_secreta_refresh_desarrollo_2026}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - choco-network
+
+  # ============================================================================
+  # 3. FRONTEND PORTAL PÚBLICO & ADMIN (React + Vite + Nginx)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
+    container_name: choco-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - choco-network
+
+# ==============================================================================
+# VOLÚMENES Y REDES
+# ==============================================================================
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  choco-network:
+    driver: bridge

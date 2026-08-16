@@ -1,0 +1,988 @@
+{
+  "info": {
+    "_postman_id": "choco-transparente-api-v2",
+    "name": "CHOCÓ TRANSPARENTE - API Completa",
+    "description": "Colección estandarizada y consolidada para las pruebas de API del backend Chocó Transparente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Verificar el estado operacional del servidor."
+      },
+      "response": []
+    },
+    {
+      "name": "FASE 1 - Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    var token = jsonData.token || (jsonData.datos && jsonData.datos.token);",
+                  "    if (token) {",
+                  "        pm.collectionVariables.set('jwt_token', token);",
+                  "        console.log('Token JWT capturado y actualizado automáticamente.');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@chocotransparente.gov.co\",\n  \"contrasena\": \"AdminChoco2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/autenticacion/iniciar-sesion",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "autenticacion", "iniciar-sesion"]
+            },
+            "description": "Autenticación de usuario. Guarda automáticamente el Bearer token en la variable {{jwt_token}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/usuarios/perfil",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "usuarios", "perfil"]
+            },
+            "description": "Obtener la información del perfil del usuario en sesión."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 2 - Territorio",
+      "item": [
+        {
+          "name": "Listar Municipios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/municipios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "municipios"]
+            },
+            "description": "Obtener listado de municipios registrados."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Municipio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Quibdó\",\n  \"departamento\": \"Chocó\",\n  \"codigo_dane\": \"27001\",\n  \"poblacion_total\": 124000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/municipios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "municipios"]
+            },
+            "description": "Registrar un nuevo municipio."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Afectaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/afectaciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "afectaciones"]
+            },
+            "description": "Obtener el reporte de zonas e incidencias de afectación."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Afectación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"municipioId\": 1,\n  \"descripcion\": \"Inundaciones en zona ribereña\",\n  \"severidad\": \"ALTA\",\n  \"zona_geografica\": \"Cuenca del río Atrato\",\n  \"personas_afectadas\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/afectaciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "afectaciones"]
+            },
+            "description": "Registrar un evento de afectación en un municipio."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Centros de Acopio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/centros-acopio",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "centros-acopio"]
+            },
+            "description": "Obtener los centros de acopio activos."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Centro de Acopio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"municipioId\": 1,\n  \"nombre\": \"Centro Cívico Quibdó\",\n  \"direccion\": \"Carrera 1 # 20-50\",\n  \"telefono\": \"+5764123456\",\n  \"capacidad\": 1000,\n  \"responsable\": \"Juan Pérez\",\n  \"estado\": \"SOLICITADO\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/centros-acopio",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "centros-acopio"]
+            },
+            "description": "Solicitar la apertura de un centro de acopio."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 3 - Inventario",
+      "item": [
+        {
+          "name": "Listar Inventario por Centro",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventario/centro/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventario", "centro", "1"]
+            },
+            "description": "Consultar existencias de inventario en un centro específico."
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Entrada Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inventario_id\": 1,\n  \"cantidad\": 100,\n  \"motivo\": \"Donación ONG Internacional\",\n  \"referencia_externa\": \"DOC-2026-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventario/entradas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventario", "entradas"]
+            },
+            "description": "Registrar el ingreso de suministros al inventario."
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Salida Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inventario_id\": 1,\n  \"cantidad\": 50,\n  \"motivo\": \"ENTREGA_BENEFICIARIO\",\n  \"numero_acta\": \"ACTA-2026-0001\",\n  \"observaciones\": \"Entrega a familias afectadas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventario/salidas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventario", "salidas"]
+            },
+            "description": "Registrar despacho o salida de bienes de inventario."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 4 - Beneficiarios",
+      "item": [
+        {
+          "name": "Listar Beneficiarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/beneficiarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "beneficiarios"]
+            },
+            "description": "Obtener listado general de beneficiarios registrados."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Beneficiario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"municipioId\": 1,\n  \"nombre\": \"Carlos Vásquez\",\n  \"apellido\": \"García\",\n  \"numero_identificacion\": \"8765432\",\n  \"tipo_identificacion\": \"CC\",\n  \"telefono\": \"+5764111111\",\n  \"correo\": \"carlos@email.com\",\n  \"direccion\": \"Calle 10 # 5-20\",\n  \"numero_miembros_familia\": 5,\n  \"necesidades\": [\"ALIMENTOS\", \"ROPA\"],\n  \"latitud\": 5.6959,\n  \"longitud\": -76.6419\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/beneficiarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "beneficiarios"]
+            },
+            "description": "Registrar un nuevo beneficiario en el sistema."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Solicitudes de Ayuda",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes-ayuda",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "solicitudes-ayuda"]
+            },
+            "description": "Listar solicitudes de asistencia generadas."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Solicitud de Ayuda",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"beneficiarioId\": 1,\n  \"tipo_ayuda\": \"ALIMENTOS\",\n  \"descripcion\": \"Familia requiere kit alimentario prioritario\",\n  \"cantidad\": 2,\n  \"unidad_medida\": \"BOLSA\",\n  \"prioridad\": \"ALTA\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes-ayuda",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "solicitudes-ayuda"]
+            },
+            "description": "Vincular una nueva solicitud de ayuda a un beneficiario."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Entregas de Ayuda",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/entregas-ayuda",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "entregas-ayuda"]
+            },
+            "description": "Listar histórico de ayudas entregadas."
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Entrega de Ayuda",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"solicitudAyudaId\": 1,\n  \"cantidad_entregada\": 2,\n  \"unidad_medida\": \"BOLSA\",\n  \"url_evidencia_fotografica\": \"https://storage.example.com/foto123.jpg\",\n  \"observaciones\": \"Entrega efectuada con soporte en acta\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/entregas-ayuda",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "entregas-ayuda"]
+            },
+            "description": "Registrar el cumplimiento de una solicitud con soporte fotográfico."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 5 - Albergues y Denuncias",
+      "item": [
+        {
+          "name": "Listar Albergues",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/albergues",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "albergues"]
+            },
+            "description": "Consultar disponibilidad de albergues."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Albergue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"municipioId\": 1,\n  \"nombre\": \"Escuela Rural El Porvenir\",\n  \"direccion\": \"Vereda Las Palmas Km 5\",\n  \"capacidad\": 150,\n  \"responsable\": \"María Rodríguez\",\n  \"telefono\": \"+5764222222\",\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/albergues",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "albergues"]
+            },
+            "description": "Registrar una nueva sede de albergue."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Denuncias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/denuncias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "denuncias"]
+            },
+            "description": "Consultar denuncias de veeduría y transparencia."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Denuncia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"municipioId\": 1,\n  \"tipo\": \"MALVERSACION_FONDOS\",\n  \"descripcion\": \"Inconsistencia reportada en la distribución del inventario\",\n  \"estado\": \"RECIBIDA\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/denuncias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "denuncias"]
+            },
+            "description": "Radicar reporte de irregularidad o denuncia."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Estado Denuncia",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN_REVISION\",\n  \"observaciones\": \"Se da apertura al seguimiento administrativo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/denuncias/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "denuncias", "1"]
+            },
+            "description": "Cambiar el estado de tramite de una denuncia existente."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 6 - Donaciones y Gastos",
+      "item": [
+        {
+          "name": "Listar Donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/donaciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "donaciones"]
+            },
+            "description": "Obtener registro general de donaciones."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Donación en Dinero",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"donante\": \"Fundación XYZ\",\n  \"monto\": 5000000,\n  \"cuentaDestino\": \"1234567890\",\n  \"referencia\": \"TRANSF-2026-001\",\n  \"estado\": \"PENDIENTE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/donaciones/dinero",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "donaciones", "dinero"]
+            },
+            "description": "Registrar aporte monetario."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Donación en Especie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"donante\": \"Empresa ABC S.A.\",\n  \"tipoAyuda\": \"ALIMENTOS\",\n  \"cantidad\": 500,\n  \"peso\": 2500,\n  \"unidadMedida\": \"BOLSA\",\n  \"estado\": \"PENDIENTE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/donaciones/especie",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "donaciones", "especie"]
+            },
+            "description": "Registrar donación de insumos físicos o materiales."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Gastos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "gastos"]
+            },
+            "description": "Listar egresos operacionales."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Gasto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizacionId\": 1,\n  \"descripcion\": \"Transporte logístico de víveres\",\n  \"monto\": 2500000,\n  \"fecha_gasto\": \"2026-08-15\",\n  \"categoria\": \"TRANSPORTE\",\n  \"estado\": \"BORRADOR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "gastos"]
+            },
+            "description": "Registrar borrador de un egreso operativo."
+          },
+          "response": []
+        },
+        {
+          "name": "Aprobar Gasto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accion\": \"APROBAR\",\n  \"observaciones\": \"Aprobado según disponibilidad presupuestal\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/gastos/1/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "gastos", "1", "aprobar"]
+            },
+            "description": "Aprobar o rechazar solicitud de gasto."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FASE 7 - Reportes y Dashboards",
+      "item": [
+        {
+          "name": "Reporte de Donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reportes/donaciones?fechaInicio=2026-08-01&fechaFin=2026-08-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reportes", "donaciones"],
+              "query": [
+                {
+                  "key": "fechaInicio",
+                  "value": "2026-08-01"
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2026-08-31"
+                }
+              ]
+            },
+            "description": "Generar consolidado de donaciones por rango de fecha."
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de Gastos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reportes/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reportes", "gastos"]
+            },
+            "description": "Generar reporte operacional de gastos."
+          },
+          "response": []
+        },
+        {
+          "name": "Exportar Reporte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo_reporte\": \"DONACIONES\",\n  \"formato\": \"JSON\",\n  \"filtros\": {\n    \"fechaInicio\": \"2026-08-01\",\n    \"fechaFin\": \"2026-08-31\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/reportes/exportar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reportes", "exportar"]
+            },
+            "description": "Exportar reportes del sistema en formato JSON o CSV."
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Administrativo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboards/administrativo",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "dashboards", "administrativo"]
+            },
+            "description": "Obtener indicadores generales y métricas internas (KPIs)."
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Público",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboards/publico",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "dashboards", "publico"]
+            },
+            "description": "Obtener datos consolidados para acceso público de veeduría sin requerir token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios y Administración",
+      "item": [
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "usuarios"]
+            },
+            "description": "Obtener listado de todos los usuarios registrados."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/usuarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "usuarios", "1"]
+            },
+            "description": "Consultar detalles de un usuario por su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Flores\",\n  \"correo\": \"juan.flores@choco.gov\",\n  \"contrasena\": \"Segura123!\",\n  \"rolId\": 2,\n  \"municipioId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "usuarios"]
+            },
+            "description": "Registrar un usuario utilizando el ID del rol (`rolId`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Flores G.\",\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/usuarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "usuarios", "1"]
+            },
+            "description": "Actualizar la información básica de un usuario."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles"]
+            },
+            "description": "Consultar catálogo de roles del sistema."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Permisos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/permisos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permisos"]
+            },
+            "description": "Consultar permisos de acceso disponibles."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
