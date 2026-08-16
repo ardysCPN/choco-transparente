@@ -16,10 +16,11 @@ build/
 .env.production.local
 *.env
 
-# Private folders
+# Private folders & internal deployment notes
 _privado/
 _privado_no_subir/
 scratch/
+docs/historico/DESPLIEGUE_Y_USO.md
 
 # Logs
 *.log

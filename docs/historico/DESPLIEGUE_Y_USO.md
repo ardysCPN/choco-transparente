@@ -1,316 +1,114 @@
-# CHOCÓ TRANSPARENTE — Documentación Técnica de Despliegue
+# 🚀 GUÍA DE DESPLIEGUE DOKPLOY (COMPOSE STACK)
+## Plataforma Departamental Chocó Transparente v1.0
 
-Fecha de finalización: **2026-08-15**  
-Estado: **✅ PROYECTO COMPLETADO - LISTO PARA PRODUCCIÓN**
-
----
-
-## 1. Requisitos del Sistema
-
-### Mínimo recomendado
-- **Node.js**: 18.x o superior
-- **PostgreSQL**: 14 o superior con extensión PostGIS
-- **npm**: 9.x o superior
-- **RAM**: 2 GB mínimo
-- **Disco**: 5 GB para base de datos + aplicación
-
-### Variables de entorno (.env)
-
-```bash
-# Base de datos
-DATABASE_URL="postgresql://postgres:Sa123456@localhost:5432/chocotransparente"
-
-# Servidor
-PORT=3000
-NODE_ENV=development
-
-# JWT
-JWT_SECRET="clave_super_secreta_cambiar_en_produccion"
-JWT_EXPIRATION=7d
-
-# CORS
-CORS_ORIGIN="http://localhost:3000,https://tunominio.com"
-```
+> **Guía técnica de despliegue automatizado para Dokploy con PostgreSQL 15 / PostGIS y Traefik SSL.**
 
 ---
 
-## 2. Instalación y Configuración
+## 💡 ¿Cómo Funciona el Despliegue con Docker Compose en Dokploy?
 
-### 2.1 Clonar y preparar el proyecto
-
-```bash
-cd c:\proyectos\choco-transparente\backend
-npm install
-```
-
-### 2.2 Configurar base de datos
-
-```bash
-# Ejecutar script de inicialización (si es nueva instalación)
-psql -U postgres -h localhost -d chocotransparente -f ../script-BD.sql
-
-# Generar cliente Prisma
-npx prisma generate
-
-# Crear migraciones si es necesario
-npx prisma migrate dev
-```
-
-### 2.3 Compilar TypeScript
-
-```bash
-npx tsc -p tsconfig.json
-```
+Al desplegar como **Compose Service** en Dokploy:
+1. **La Base de Datos se crea y se puebla automáticamente:** El contenedor `postgis/postgis:15-3.4` crea la base de datos `choco_transparente` y corre el script `./script-BD-demo.sql` la primera vez que inicia.
+2. **El Backend se compila automáticamente:** Node.js 20 Alpine genera Prisma y compila TypeScript en el puerto `4000`.
+3. **El Frontend se compila y monta en Nginx:** Vite compila los componentes SPA y Nginx sirve los archivos en el puerto `80`.
+4. **Traefik gestiona los certificados SSL (HTTPS)** automáticamente para tus dominios.
 
 ---
 
-## 3. Ejecución
+## 📋 1. Configuración Paso a Paso en Dokploy
 
-### Desarrollo
-```bash
-npm run dev
-# O si prefieres:
-npm run start
-```
-
-### Producción
-```bash
-npm run build
-npm run start
-```
-
-### Pruebas
-```bash
-# Ejecutar todas las pruebas
-npm test
-
-# Ejecutar fase específica
-npx vitest run pruebas/fase1.autenticacion.test.ts
-npx vitest run pruebas/fase2.territorio.test.ts
-# ... etc
-```
+### Paso 1: Crear el Servicio Compose
+1. Ingresa a tu panel Dokploy: 👉 **`http://tu-dominio-o-ip-dokploy:3000`**.
+2. En tu Proyecto, haz clic en **Create Service** y selecciona **Compose**.
+3. Asigna de nombre al servicio: **`choco-transparente`**.
 
 ---
 
-## 4. Endpoints Principales
-
-### 4.1 Autenticación (Fase 1)
-```
-POST   /api/v1/autenticacion/login
-GET    /api/v1/autenticacion/perfil
-```
-
-### 4.2 Gestión Territorial (Fase 2)
-```
-GET    /api/v1/municipios
-POST   /api/v1/municipios
-GET    /api/v1/afectaciones
-POST   /api/v1/afectaciones
-GET    /api/v1/centros-acopio
-POST   /api/v1/centros-acopio
-```
-
-### 4.3 Inventario (Fase 3)
-```
-GET    /api/v1/inventario
-POST   /api/v1/inventario
-POST   /api/v1/inventario/entrada
-POST   /api/v1/inventario/salida
-```
-
-### 4.4 Beneficiarios (Fase 4)
-```
-GET    /api/v1/beneficiarios
-POST   /api/v1/beneficiarios
-GET    /api/v1/solicitudes-ayuda
-POST   /api/v1/solicitudes-ayuda
-GET    /api/v1/entregas-ayuda
-POST   /api/v1/entregas-ayuda
-```
-
-### 4.5 Albergues y Denuncias (Fase 5)
-```
-GET    /api/v1/albergues
-POST   /api/v1/albergues
-GET    /api/v1/denuncias
-POST   /api/v1/denuncias
-```
-
-### 4.6 Donaciones y Gastos (Fase 6)
-```
-GET    /api/v1/donaciones
-POST   /api/v1/donaciones/dinero
-POST   /api/v1/donaciones/especie
-GET    /api/v1/gastos
-POST   /api/v1/gastos
-POST   /api/v1/gastos/:id/aprobar
-```
-
-### 4.7 Reportes y Dashboards (Fase 7)
-```
-GET    /api/v1/reportes/donaciones
-GET    /api/v1/reportes/gastos
-GET    /api/v1/reportes/beneficiarios
-GET    /api/v1/reportes/afectaciones
-GET    /api/v1/reportes/inventario
-POST   /api/v1/reportes/exportar
-
-GET    /api/v1/dashboards/administrativo
-GET    /api/v1/dashboards/publico
-GET    /api/v1/dashboards/inventario
-GET    /api/v1/dashboards/entregas
-```
+### Paso 2: Conectar el Repositorio GitHub
+- **Source Type:** `GitHub`
+- **Repository:** `ardysCPN/choco-transparente`
+- **Branch:** `main`
+- **Compose Path:** `docker-compose.yml`
+- Haz clic en **Save**.
 
 ---
 
-## 5. Seguridad
+### Paso 3: Configurar las Variables de Entorno
+En la pestaña **Environment** de tu servicio en Dokploy, pega el siguiente bloque:
 
-### 5.1 Autenticación
-- Todos los endpoints excepto `/dashboards/publico` requieren JWT válido
-- Login retorna token JWT con expiración de 7 días
-- Contraseñas se encriptan con bcrypt (10 rondas)
+```ini
+# ==============================================================================
+# BASE DE DATOS POSTGRESQL + POSTGIS
+# ==============================================================================
+POSTGRES_DB=choco_transparente
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=TuPasswordSeguroPostgres2026!
 
-### 5.2 Autorización
-- Roles: SUPERADMIN, ADMINISTRADOR, COORDINADOR_MUNICIPAL, OPERADOR
-- Permisos granulares por módulo (SISTEMA_GLOBAL por defecto)
-- Usuarios territoriales tienen acceso limitado a su municipio
+# ==============================================================================
+# BACKEND API REST
+# ==============================================================================
+JWT_SECRET=clave_secreta_jwt_choco_transparente_2026_super_segura
+JWT_REFRESH_SECRET=clave_secreta_refresh_choco_transparente_2026
+JWT_TIEMPO_EXPIRACION=8h
+JWT_REFRESH_EXPIRES_IN=7d
+CORS_ORIGIN=*
 
-### 5.3 Recomendaciones para producción
-```bash
-# 1. Cambiar JWT_SECRET a valor fuerte
-export JWT_SECRET=$(openssl rand -base64 32)
-
-# 2. Usar HTTPS obligatoriamente
-# 3. Configurar CORS según dominios reales
-# 4. Implementar rate limiting en nginx/reverse proxy
-# 5. Habilitar HTTPS/TLS en PostgreSQL
-# 6. Usar variables de entorno para credenciales (no hardcodear)
-# 7. Configurar backups automáticos de BD
+# ==============================================================================
+# FRONTEND WEB (URL pública HTTPS de tu Backend API)
+# ==============================================================================
+VITE_API_URL=https://api.tudominio.com/api/v1
 ```
+
+Haz clic en **Save**.
 
 ---
 
-## 6. Base de Datos
+### Paso 4: Configurar los Dominios en Traefik (Pestaña Domains)
 
-### 6.1 Tablas principales
-- `usuario` — usuarios del sistema
-- `rol`, `permiso`, `rol_permiso` — control de acceso
-- `municipio`, `departamento` — estructura territorial
-- `afectacion` — zonas afectadas
-- `centro_acopio` — centros de distribución
-- `inventario`, `lote`, `entrada_inventario`, `salida_inventario` — control de stock
-- `beneficiario` — familias asistidas
-- `solicitud_ayuda`, `entrega_ayuda` — flujo de asistencia
-- `albergue` — refugios temporales
-- `denuncia` — reportes de irregularidades
-- `donacion`, `donacion_dinero`, `donacion_especie` — recepción de ayuda
-- `gasto` — registro de egresos
-- `auditoria` — trazabilidad de cambios
+1. **Frontend (Web pública + Login):**
+   - **Service Name:** `frontend`
+   - **Container Port:** `80`
+   - **Domain:** `chocotransparente.tudominio.com` (o `tudominio.com`)
+   - **Certificate:** Activar **Let's Encrypt (SSL Automático)**.
 
-### 6.2 Backup y Restauración
+2. **Backend (API REST):**
+   - **Service Name:** `backend`
+   - **Container Port:** `4000`
+   - **Domain:** `api.tudominio.com` (o `api.chocotransparente.tudominio.com`)
+   - **Certificate:** Activar **Let's Encrypt (SSL Automático)**.
 
-```bash
-# Backup completo
-pg_dump -U postgres -h localhost chocotransparente > backup_$(date +%Y%m%d_%H%M%S).sql
-
-# Restaurar desde backup
-psql -U postgres -h localhost chocotransparente < backup_20260815_120000.sql
-
-# Backup con estructura y datos
-pg_dump -U postgres --format=custom chocotransparente > backup.dump
-pg_restore -U postgres -d chocotransparente backup.dump
-```
+Haz clic en **Save**.
 
 ---
 
-## 7. Monitoreo y Logs
-
-### 7.1 Health Check
-```bash
-curl http://localhost:3000/health
-# Response: {"ok":true,"mensaje":"Servidor operativo"}
-```
-
-### 7.2 Logs de auditoría
-Todos los cambios de datos se registran en tabla `auditoria`:
-- usuario_id, modulo, accion, entidad, datos_anteriores, datos_nuevos
-- Útil para trazabilidad y debugging
-
-### 7.3 Logs de aplicación
-Revisar consola de Node.js para errores en tiempo de ejecución
+### Paso 5: Desplegar (**Deploy**) 🚀
+Haz clic en el botón superior **Deploy**. En la pestaña **Deployments / Logs** verás la compilación y puesta en marcha en tiempo real.
 
 ---
 
-## 8. Extensiones Futuras
+## 👥 2. Credenciales Listas para Iniciar Testing
 
-### PWA Offline
-```typescript
-// Usar SincronizacionServicio para sincronizar cambios cuando haya conectividad
-const sincronizacion = new SincronizacionServicio();
-await sincronizacion.registrarCambio('CREATE', 'beneficiario', id, datos);
-await sincronizacion.sincronizar(); // Cuando reconecta
-```
+Una vez desplegado:
 
-### Exportación a PDF/Excel
-```bash
-npm install pdf-lib exceljs
-# Extender ReportesServicio con métodos de generación
-```
-
-### Mapas
-```bash
-npm install leaflet mapbox-gl
-# Integrar en frontend usando coordenadas (latitud, longitud) disponibles en:
-# municipio, afectacion, centro_acopio, beneficiario, albergue, etc.
-```
-
-### Notificaciones
-```typescript
-// Tabla 'notificacion' ya existe, agregar servicio de:
-// - Email (sendgrid, mailgun)
-// - SMS (twilio)
-// - Push (Firebase Cloud Messaging)
-```
+| Acceso | URL | Credenciales |
+| :--- | :--- | :--- |
+| **Portal Público** | `https://tudominio.com/` | Libre acceso ciudadano (31 municipios, mapas, donaciones, solicitudes) |
+| **Mapa Interactivo** | `https://tudominio.com/mapa` | Monitoreo en vivo con filtros de capas |
+| **Panel Admin (Testing)** | `https://tudominio.com/admin/login` | Botón **🧪 Cargar Usuario de Pruebas** (`test@chocotransparente.gov.co` / `TestChoco2026!`) |
+| **Superadministrador** | `https://tudominio.com/admin/login` | `admin@chocotransparente.gov.co` / `AdminChoco2026!` |
 
 ---
 
-## 9. Troubleshooting
+## 🏛️ 3. Cambio a Producción Oficial para la Gobernación
 
-### Error: "no se puede conectar a la base de datos"
-```bash
-# Verificar PostgreSQL está corriendo
-pg_isready -h localhost -p 5432
-
-# Probar conexión
-psql -U postgres -h localhost -c "SELECT 1"
-
-# Revisar DATABASE_URL en .env
-```
-
-### Error: "JWT signature invalid"
-```bash
-# Asegurar JWT_SECRET es igual en .env
-# Limpiar tokens anteriores (cliente debe login nuevamente)
-```
-
-### Error: "Constraint violation"
-```bash
-# Revisar validaciones en DTOs (Zod schemas)
-# Algunas restricciones CHECK importantes:
-# - donor.estado IN ('PENDIENTE', 'RECIBIDO', 'RECHAZADO')
-# - denuncia.estado IN ('RECIBIDA', 'EN_REVISION', 'INVESTIGACION', 'RESUELTA', 'DESCARTADA')
-# - gasto.estado IN ('BORRADOR', 'PENDIENTE_APROBACION', 'APROBADO', 'RECHAZADO', 'PAGADO', 'ANULADO')
-```
-
----
-
-## 10. Contacto y Soporte
-
-**Proyecto**: CHOCÓ TRANSPARENTE  
-**Versión**: 1.0 (Todas las Fases Completadas)  
-**Última actualización**: 2026-08-15  
-
-Para preguntas técnicas, revisar:
-- [PLAN_DESARROLLO_FASES.md](./PLAN_DESARROLLO_FASES.md)
-- Comentarios en código fuente
-- Tests en `pruebas/` como referencia de uso
+Cuando vayas a entregar la plataforma limpia desde cero a la Gobernación del Chocó:
+1. En `docker-compose.yml`, cambia la línea:
+   ```yaml
+   - ./script-BD-demo.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+   ```
+   por:
+   ```yaml
+   - ./script-BD-produccion.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+   ```
+2. Haz `git commit` y `git push`.
+3. En Dokploy, haz clic en **Deploy**.
