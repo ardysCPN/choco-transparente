@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # ============================================================================
   # 1. BASE DE DATOS POSTGRESQL 15 CON EXTENSIÓN POSTGIS NATIVA
@@ -24,7 +22,7 @@ services:
       - choco_network
 
   # ============================================================================
-  # 2. BACKEND API REST (Node.js + Express + Prisma) 
+  # 2. BACKEND API REST (Node.js + Express + Prisma)
   # ============================================================================
   backend:
     build:
@@ -41,9 +39,9 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      JWT_TIEMPO_EXPIRACION: ${JWT_TIEMPO_EXPIRACION}
-      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
-      CORS_ORIGIN: ${CORS_ORIGIN}
+      JWT_TIEMPO_EXPIRACION: ${JWT_TIEMPO_EXPIRACION:-8h}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
     networks:
       - choco_network
 
@@ -55,13 +53,21 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
     container_name: choco-frontend
     restart: always
     depends_on:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chocotransparente.rule=Host(`chocotransparente.adhsolutions.tech`)"
+      - "traefik.http.routers.chocotransparente.entrypoints=web,websecure"
+      - "traefik.http.routers.chocotransparente.tls=true"
+      - "traefik.http.routers.chocotransparente.tls.certresolver=letsencrypt"
+      - "traefik.http.services.chocotransparente.loadbalancer.server.port=80"
     networks:
       - choco_network
+      - dokploy-network
 
 # ==============================================================================
 # VOLÚMENES Y REDES PERSISTENTES
@@ -72,3 +78,5 @@ volumes:
 networks:
   choco_network:
     driver: bridge
+  dokploy-network:
+    external: true
