@@ -4,7 +4,6 @@ services:
   # ============================================================================
   postgres:
     image: postgis/postgis:15-3.4
-    container_name: choco-postgres
     restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -28,7 +27,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: choco-backend
     restart: always
     depends_on:
       postgres:
@@ -54,20 +52,11 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-/api/v1}
-    container_name: choco-frontend
     restart: always
     depends_on:
       - backend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.chocotransparente.rule=Host(`chocotransparente.adhsolutions.tech`)"
-      - "traefik.http.routers.chocotransparente.entrypoints=web,websecure"
-      - "traefik.http.routers.chocotransparente.tls=true"
-      - "traefik.http.routers.chocotransparente.tls.certresolver=letsencrypt"
-      - "traefik.http.services.chocotransparente.loadbalancer.server.port=80"
     networks:
       - choco_network
-      - dokploy-network
 
 # ==============================================================================
 # VOLÚMENES Y REDES PERSISTENTES
@@ -78,5 +67,3 @@ volumes:
 networks:
   choco_network:
     driver: bridge
-  dokploy-network:
-    external: true
