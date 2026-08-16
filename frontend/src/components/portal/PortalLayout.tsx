@@ -111,11 +111,11 @@ export const PortalLayout: React.FC = () => {
               </div>
             </Link>
 
-            {/* CENTRO: Enlaces de Navegación Fluidos y Optimizados (Desktop) */}
-            <nav className="hidden lg:flex items-center space-x-1 xl:space-x-1.5 shrink min-w-0 justify-center">
+            {/* CENTRO: Enlaces de Navegación Fluidos y Optimizados (Desktop XL+) */}
+            <nav className="hidden xl:flex items-center space-x-0.5 2xl:space-x-1.5 shrink min-w-0 justify-center">
               <Link
                 to="/"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -127,7 +127,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/mapa"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/mapa')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -139,7 +139,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/municipios"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/municipios')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -154,7 +154,7 @@ export const PortalLayout: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                  className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                     isActive('/centros-acopio') || isActive('/inventario-publico') || isActive('/albergues-publico') || isActive('/afectaciones-publico')
                       ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -201,7 +201,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/como-ayudar"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/como-ayudar') || isActive('/donar') || isActive('/voluntariado') || isActive('/transporte')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -213,7 +213,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/transparencia"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/transparencia')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -225,7 +225,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/contactos"
-                className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
+                className={`px-2 2xl:px-2.5 py-1.5 2xl:py-2 rounded-xl text-[11px] 2xl:text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap ${
                   isActive('/contactos')
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -240,7 +240,7 @@ export const PortalLayout: React.FC = () => {
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <Link
                 to="/solicitar-ayuda"
-                className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-2 sm:px-3.5 py-1.5 sm:py-2.5 rounded-xl shadow-md shadow-rose-600/20 flex items-center gap-1 sm:gap-1.5 transition-all hover:scale-105 active:scale-95 whitespace-nowrap shrink-0"
+                className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow-md shadow-rose-600/20 flex items-center gap-1 sm:gap-1.5 transition-all hover:scale-105 active:scale-95 whitespace-nowrap shrink-0"
                 title="Solicitar ayuda humanitaria urgente"
               >
                 <LifeBuoy className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin-slow shrink-0" />
@@ -250,7 +250,7 @@ export const PortalLayout: React.FC = () => {
 
               <Link
                 to="/denunciar"
-                className="hidden md:flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2.5 rounded-xl transition whitespace-nowrap shrink-0"
+                className="hidden 2xl:flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-2.5 py-2 rounded-xl transition whitespace-nowrap shrink-0"
                 title="Canal anónimo de denuncias y veeduría"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
@@ -260,7 +260,7 @@ export const PortalLayout: React.FC = () => {
               {/* Botón de Acceso Admin */}
               <Link
                 to={adminRoute}
-                className="px-2 sm:px-3 py-1.5 sm:py-2.5 text-slate-800 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-xs font-extrabold flex items-center gap-1 sm:gap-1.5 transition whitespace-nowrap shadow-xs shrink-0"
+                className="px-2 sm:px-3 py-1.5 sm:py-2 text-slate-800 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-xs font-extrabold flex items-center gap-1 sm:gap-1.5 transition whitespace-nowrap shadow-xs shrink-0"
                 title="Acceso para funcionarios y coordinadores"
               >
                 <Lock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
@@ -268,10 +268,10 @@ export const PortalLayout: React.FC = () => {
                 <span className="sm:hidden text-[11px]">{isAuthenticated ? 'Panel' : 'Admin'}</span>
               </Link>
 
-              {/* Botón de Menú Móvil (Siempre visible en < lg) */}
+              {/* Botón de Menú Móvil / Tablet (Visible en < xl) */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 sm:p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 bg-white lg:hidden focus:outline-none shrink-0"
+                className="p-1.5 sm:p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 bg-white xl:hidden focus:outline-none shrink-0"
                 aria-label="Abrir navegación móvil"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5 text-slate-900" /> : <Menu className="w-5 h-5 text-slate-900" />}
@@ -280,9 +280,9 @@ export const PortalLayout: React.FC = () => {
           </div>
         </div>
 
-        {/* Drawer de Navegación Móvil */}
+        {/* Drawer de Navegación Móvil y Tablet (< xl) */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 shadow-lg animate-in slide-in-from-top-2">
+          <div className="xl:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 shadow-lg animate-in slide-in-from-top-2">
             <div className="grid grid-cols-2 gap-2 pb-2">
               <Link
                 to="/solicitar-ayuda"
