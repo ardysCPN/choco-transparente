@@ -356,6 +356,15 @@ CREATE TABLE IF NOT EXISTS public.configuracion (
     descripcion TEXT
 );
 
+CREATE TABLE IF NOT EXISTS public.validacion_ayuda (
+    id BIGSERIAL PRIMARY KEY,
+    numero_identificacion VARCHAR(50) NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'RECIBIDA',
+    organizacion_entregante VARCHAR(255) NOT NULL,
+    fecha_registro TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    consentimiento_datos BOOLEAN NOT NULL DEFAULT TRUE
+);
+
 -- =============================================================================
 -- ÍNDICES DE RENDIMIENTO Y ESPACIALES
 -- =============================================================================
@@ -370,6 +379,7 @@ CREATE INDEX IF NOT EXISTS idx_inventario_centro ON public.inventario(centro_aco
 CREATE INDEX IF NOT EXISTS idx_solicitud_estado ON public.solicitud_ayuda(estado);
 CREATE INDEX IF NOT EXISTS idx_gasto_estado ON public.gasto(estado);
 CREATE INDEX IF NOT EXISTS idx_auditoria_usuario ON public.auditoria(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_validacion_ayuda_identificacion ON public.validacion_ayuda(numero_identificacion);
 
 -- =============================================================================
 -- POBLAMIENTO BASE (31 MUNICIPIOS + ROLES + USUARIOS DE PRUEBA)

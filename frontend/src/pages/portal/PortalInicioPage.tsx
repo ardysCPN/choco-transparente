@@ -27,6 +27,7 @@ import {
   AfectacionPublica,
   InventarioConsolidadoItem,
 } from '../../types/publico.types';
+import { ModuloValidacionAyuda } from '../../components/portal/ModuloValidacionAyuda';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -281,7 +282,12 @@ export const PortalInicioPage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. ESTADÍSTICAS Y KPIS CIUDADANOS EN FONDO CLARO                         */}
+      {/* 2. MÓDULO: ¿ESTA PERSONA YA RECIBIÓ AYUDA? (VALIDACIÓN RÁPIDA DE AYUDA)   */}
+      {/* ========================================================================= */}
+      <ModuloValidacionAyuda />
+
+      {/* ========================================================================= */}
+      {/* 3. ESTADÍSTICAS Y KPIS CIUDADANOS EN FONDO CLARO                         */}
       {/* ========================================================================= */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">

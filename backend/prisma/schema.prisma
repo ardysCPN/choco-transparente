@@ -449,3 +449,15 @@ model Configuracion {
 
   @@map("configuracion")
 }
+
+model ValidacionAyuda {
+  id                     BigInt   @id @default(autoincrement())
+  numeroIdentificacion   String   @map("numero_identificacion")
+  estado                 String   @default("RECIBIDA")
+  organizacionEntregante String   @map("organizacion_entregante")
+  fechaRegistro          DateTime @default(now()) @map("fecha_registro")
+  consentimientoDatos    Boolean  @default(true) @map("consentimiento_datos")
+
+  @@index([numeroIdentificacion], map: "idx_validacion_ayuda_identificacion")
+  @@map("validacion_ayuda")
+}

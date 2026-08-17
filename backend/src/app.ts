@@ -19,6 +19,7 @@ import gastoRutas from './gastos/rutas/gasto.rutas.js';
 import reporteRutas from './reportes/rutas/reporte.rutas.js';
 import dashboardRutas from './dashboards/rutas/dashboard.rutas.js';
 import publicoRutas from './publico/rutas/publico.rutas.js';
+import validacionAyudaRutas from './validacion-ayuda/rutas/validacion-ayuda.rutas.js';
 import { configuracion } from './configuracion/configuracion.js';
 import { ErrorAplicacion } from './comun/errores/errores.js';
 import { responderError } from './comun/utilidades/respuestas.js';
@@ -56,6 +57,7 @@ app.use('/api/v1/gastos', gastoRutas);
 app.use('/api/v1/reportes', reporteRutas);
 app.use('/api/v1/dashboards', dashboardRutas);
 app.use('/api/v1/publico', publicoRutas);
+app.use('/api/v1/validacion-ayuda', validacionAyudaRutas);
 
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (error instanceof ErrorAplicacion) {
