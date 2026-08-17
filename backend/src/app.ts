@@ -20,6 +20,7 @@ import reporteRutas from './reportes/rutas/reporte.rutas.js';
 import dashboardRutas from './dashboards/rutas/dashboard.rutas.js';
 import publicoRutas from './publico/rutas/publico.rutas.js';
 import validacionAyudaRutas from './validacion-ayuda/rutas/validacion-ayuda.rutas.js';
+import { asegurarTablaValidacionAyuda } from './validacion-ayuda/servicio/validacion-ayuda.servicio.js';
 import { configuracion } from './configuracion/configuracion.js';
 import { ErrorAplicacion } from './comun/errores/errores.js';
 import { responderError } from './comun/utilidades/respuestas.js';
@@ -71,6 +72,7 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
   return responderError(res, 'Error desconocido', 'ERROR_DESCONOCIDO', 500);
 });
 
-app.listen(configuracion.puerto, () => {
+app.listen(configuracion.puerto, async () => {
   console.log(`Servidor escuchando en http://localhost:${configuracion.puerto}`);
+  await asegurarTablaValidacionAyuda();
 });

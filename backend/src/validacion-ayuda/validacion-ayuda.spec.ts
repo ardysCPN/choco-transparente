@@ -8,6 +8,7 @@ import { ValidacionAyudaServicio } from './servicio/validacion-ayuda.servicio.js
 // Mock de Prisma
 vi.mock('../comun/biblioteca/prisma.js', () => ({
   prisma: {
+    $executeRawUnsafe: vi.fn().mockResolvedValue(1),
     validacionAyuda: {
       findFirst: vi.fn(),
       create: vi.fn(),
